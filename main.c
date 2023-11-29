@@ -6,90 +6,91 @@ struct {
   size_t len;
   size_t cap;
   int *arr;
-} typedef List;
+} typedef Vec;
 
-List list_new(size_t cap) {
-  List list = {
+Vec new_vec(size_t cap) {
+  Vec v = {
       .len = 0,
       .cap = cap,
       .arr = malloc(cap * sizeof(int)),
   };
 
-  return list;
+  return v;
 }
 
-void list_free(List list) { free(list.arr); }
+void vec_drop(Vec v) { free(v.arr); }
 
-List list_append(List list, int elem) {
-  if (list.len == list.cap) {
-    list.cap = 2 * (list.cap + 1);
+Vec vec_append(Vec v, int elem) {
+  if (v.len == v.cap) {
+    v.cap = 2 * (v.cap + 1);
 
-    int *arr = malloc(list.cap * sizeof(int));
-    memcpy(arr, list.arr, sizeof(int) * list.len);
+    int *arr = malloc(v.cap * sizeof(int));
+    memcpy(arr, v.arr, v.len * sizeof(int));
 
-    list.arr = arr;
+    v.arr = arr;
   }
 
-  list.arr[list.len] = elem;
-  list.len++;
+  v.arr[v.len] = elem;
+  v.len++;
 
-  return list;
+  return v;
 }
 
-List list_merge(List list, List other) {
-  if (list.len == list.cap) {
-    list.cap = 2 * (list.cap + other.len);
+Vec vec_merge(Vec v, Vec rhs) {
+  if (v.len == v.cap) {
+    v.cap = 2 * (v.cap + rhs.len);
 
-    int *arr = malloc(list.cap * sizeof(int));
-    memcpy(arr, list.arr, sizeof(int) * list.len);
+    int *arr = malloc(v.cap * sizeof(int));
+    memcpy(arr, v.arr, v.len * sizeof(int));
 
-    list.arr = arr;
+    v.arr = arr;
   }
 
-  for (size_t i = 0; i < other.len; i++) {
-    list.arr[list.len + i] = other.arr[i];
-  }
-  list.len += other.len;
+  memcpy(v.arr + v.len, rhs.arr, rhs.len * sizeof(int));
+  v.len += rhs.len;
 
-  return list;
+  return v;
 }
 
-List list_slice(List list, size_t start, size_t end) {
-  if (start > list.cap - 1 || end > list.cap - 1) {
-    return list;
+Vec vec_slice(Vec v, size_t start, size_t end) {
+  if (start >= v.cap || end >= v.cap || start > end) {
+    return v;
   }
 
-  list.arr += start;
-  list.len = end - start;
-  list.cap = list.len;
+  v.arr += start;
+  v.len = end - start;
+  v.cap = v.len;
 
-  return list;
+  return v;
 }
 
-int list_get(List list, size_t index) { return list.arr[index]; }
-
-void list_print(List list) {
-  for (size_t i = 0; i < list.len; i++) {
-    printf("[%lu]: %d\n", i, list_get(list, i));
+void vec_dump(Vec v) {
+  for (size_t i = 0; i < v.len; i++) {
+    printf("[%lu]: %d\n", i, v.arr[i]);
   }
 }
 
 int main() {
-  List l = list_new(0);
+  Vec v1 = new_vec(5);
+  v1 = vec_append(v1, 1);
+  v1 = vec_append(v1, 2);
+  v1 = vec_append(v1, 3);
+  v1 = vec_append(v1, 4);
+  v1 = vec_append(v1, 5);
 
-  l = list_append(l, 1); // 0
-  l = list_append(l, 2); // 1
-  l = list_append(l, 3); // 2
-  l = list_append(l, 4); // 3
-  l = list_append(l, 5); // 4
+  Vec v2 = new_vec(5);
+  v2 = vec_append(v2, 6);
+  v2 = vec_append(v2, 7);
+  v2 = vec_append(v2, 8);
+  v2 = vec_append(v2, 9);
+  v2 = vec_append(v2, 10);
 
-  list_print(l);
+  v1 = vec_merge(v1, v2);
 
-  List s = list_slice(l, 1, 20);
+  vec_dump(v1);
+  vec_dump(v2);
 
-  printf("------------\n");
-  list_print(s);
-
-  list_free(l);
+  vec_drop(v2);
+  vec_drop(v1);
   return 0;
 }
