@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-I.
+CFLAGS=-g -I.
 
 cvector: vector.o main.o
 	$(CC) -o cvector vector.o main.o

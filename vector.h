@@ -12,9 +12,9 @@ struct {
 
 Vec new_vec(size_t cap);
 
-void vec_drop(Vec v);
-Vec vec_append(Vec v, int elem);
-Vec vec_merge(Vec v, Vec rhs);
+Vec vec_reserve(Vec v, size_t n);
 Vec vec_slice(Vec v, size_t start, size_t end);
+Vec vec_append(Vec v, int elem);
+Vec vec_merge(Vec v, Vec elems);
 
 #endif
