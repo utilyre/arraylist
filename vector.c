@@ -1,56 +1,57 @@
 #include "vector.h"
+#include <string.h>
 
 Vec new_vec(size_t cap) {
   Vec v = {
       .len = 0,
       .cap = cap,
-      .arr = malloc(cap * sizeof(int)),
+      .arr = malloc(cap * sizeof(VECTOR_TYPE)),
   };
 
   return v;
 }
 
-Vec vec_reserve(Vec v, size_t size) {
-  v.cap = 2 * (v.cap + size);
+void vec_reserve(Vec *v, size_t size) {
+  v->cap = 2 * (v->cap + size);
 
-  // WARNING: arr is not freed
-  int *arr = malloc(v.cap * sizeof(int));
-  memcpy(arr, v.arr, v.len * sizeof(int));
+  VECTOR_TYPE *arr = malloc(v->cap * sizeof(VECTOR_TYPE));
+  memcpy(arr, v->arr, v->len * sizeof(VECTOR_TYPE));
 
-  v.arr = arr;
-  return v;
+  free(v->arr);
+  v->arr = arr;
 }
 
-Vec vec_slice(Vec v, size_t start, size_t end) {
-  if (start >= v.cap || end >= v.cap || start > end) {
-    return v;
+void vec_push(Vec *v, VECTOR_TYPE elem) {
+  if (v->len == v->cap) {
+    vec_reserve(v, 1);
   }
 
-  v.arr += start;
-  v.len = end - start;
-  v.cap = v.len;
-
-  return v;
+  v->arr[v->len] = elem;
+  ++v->len;
 }
 
-Vec vec_append(Vec v, int elem) {
-  if (v.len == v.cap) {
-    v = vec_reserve(v, 1);
+VECTOR_TYPE vec_pop(Vec *v) { return v->arr[--v->len]; }
+
+void vec_shift(Vec *v, VECTOR_TYPE elem) {
+  if (v->len == v->cap) {
+    vec_reserve(v, 1);
   }
 
-  v.arr[v.len] = elem;
-  v.len++;
+  for (size_t i = v->len; i > 0; --i) {
+    v->arr[i] = v->arr[i - 1];
+  }
 
-  return v;
+  v->arr[0] = elem;
+  ++v->len;
 }
 
-Vec vec_merge(Vec v, Vec elems) {
-  if (v.len == v.cap) {
-    v = vec_reserve(v, elems.len);
+VECTOR_TYPE vec_unshift(Vec *v) {
+  VECTOR_TYPE elem = v->arr[0];
+
+  for (size_t i = 0; i < v->len; ++i) {
+    v->arr[i] = v->arr[i + 1];
   }
 
-  memcpy(v.arr + v.len, elems.arr, elems.len * sizeof(int));
-  v.len += elems.len;
-
-  return v;
+  --v->len;
+  return elem;
 }

@@ -9,24 +9,24 @@ void dump_vector(Vec v) {
 }
 
 int main() {
-  Vec v1 = new_vec(2);
-  v1 = vec_append(v1, 1);
-  v1 = vec_append(v1, 2);
-  v1 = vec_append(v1, 3);
-  v1 = vec_append(v1, 4);
-  v1 = vec_append(v1, 5);
+  Vec v = new_vec(2);
 
-  Vec v2 = new_vec(0);
-  v2 = vec_append(v2, 6);
-  v2 = vec_append(v2, 7);
-  v2 = vec_append(v2, 8);
-  v2 = vec_append(v2, 9);
-  v2 = vec_append(v2, 10);
+  vec_shift(&v, 1);
+  vec_shift(&v, 2);
+  vec_shift(&v, 3);
+  vec_shift(&v, 4);
+  vec_shift(&v, 5);
+  vec_shift(&v, 6);
 
-  v1 = vec_merge(v1, v2);
-  dump_vector(v1);
+  printf("Removed %d\n", vec_unshift(&v));
+  printf("Removed %d\n", vec_unshift(&v));
+  printf("Removed %d\n", vec_unshift(&v));
+  printf("Removed %d\n", vec_unshift(&v));
+  printf("Removed %d\n", vec_unshift(&v));
+  printf("Removed %d\n", vec_unshift(&v));
 
-  free(v2.arr);
-  free(v1.arr);
+  dump_vector(v);
+
+  free(v.arr);
   return 0;
 }
